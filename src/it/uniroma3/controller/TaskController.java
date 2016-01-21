@@ -17,7 +17,9 @@ import org.jsoup.nodes.Document;
 
 import it.uniroma3.facade.MongoConnection;
 import it.uniroma3.facade.PaginaFacade;
+import it.uniroma3.facade.PatternFacade;
 import it.uniroma3.model.Pagina;
+import it.uniroma3.model.Pattern;
 
 @WebServlet("/task")
 public class TaskController extends HttpServlet {
@@ -25,38 +27,44 @@ public class TaskController extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) 
 			throws ServletException, IOException {
-		
+
 		String nextPage;
-		
+		MongoConnection m = new MongoConnection();
+		PaginaFacade p = new PaginaFacade(m);
+		PatternFacade patt = new PatternFacade(m);
+
+
 		//richiesta parametri
 		String url = request.getParameter("url");
 		//String keyword = request.getParameter("keyword");
-		
-		//parse url per host
+
+		//parse url per host e estrazione pagine
 		URL pagina = new URL (url);
 		String host = pagina.getHost();
-		
-		//analisi pagina inserita
-		MongoConnection m = new MongoConnection();
-		PaginaFacade p = new PaginaFacade(m);
 		List<Pagina> l = p.getPagineByHost(host);
-		m.getMongoClient().close();
-		if (l.size()>0) {
-			String html = l.get(0).getHtml();
-			Document doc = Jsoup.parse(html);
-			doc.getElementsByTag("head").append("<script type=\"text/javascript\" src=\"jquery.js\"/><script type=\"text/javascript\" src=\"jquery.dom-outline-1.0.js\"/><script type=\"text/javascript\" src=\"app.js\"/>");
-			nextPage = "/product.jsp";
-			//String html = "<html><head></head><body><h1>hello world!</h1></body></html>";
-			HttpSession session = request.getSession();
-			session.setAttribute("pagina", doc.toString());
+
+		//ricerca del pattern
+		Pattern pattern = patt.getPatternByHost("host");
+		if (pattern == null) {
+			//analisi pagina inserita
+			if (l.size()>0) {
+				String html = l.get(0).getHtml();
+				Document doc = Jsoup.parse(html);
+				doc.getElementsByTag("head").append("<script type=\"text/javascript\" src=\"jquery.js\"/><script type=\"text/javascript\" src=\"jquery.dom-outline-1.0.js\"/><script type=\"text/javascript\" src=\"app.js\"/>");
+				nextPage = "/anteprima.jsp";
+				//String html = "<html><head></head><body><h1>hello world!</h1></body></html>";
+				HttpSession session = request.getSession();
+				session.setAttribute("pagina", doc.toString());
+			}
+			else {
+				//qui ci va l'estrazione dei commenti!
+				nextPage = "/index.jsp";
+			}
+			nextPage = response.encodeURL(nextPage);
+			ServletContext application  = getServletContext();
+			RequestDispatcher rd = application.getRequestDispatcher(nextPage);
+			rd.forward(request, response);
 		}
-		else {
-			nextPage = "/index.jsp";
-		}
-		nextPage = response.encodeURL(nextPage);
-		ServletContext application  = getServletContext();
-		RequestDispatcher rd = application.getRequestDispatcher(nextPage);
-		rd.forward(request, response);
 		return; 
 	}
 }

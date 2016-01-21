@@ -1,14 +1,19 @@
 $(document).ready(function() {
-    var myExampleClickHandler = function (element) { 
-        console.log('Clicked element:', element.nodeName); 
-    }
-    var myDomOutline = new DomOutline({ onClick: myExampleClickHandler });
-    
-    // Start outline:
-    myDomOutline.start();
-    
-    // Stop outline (also stopped on escape/backspace/delete keys):
-    //myDomOutline.stop();
+	var myExampleClickHandler = function(event){ 
+		$('#log').html([
+		'<b>Element:</b> ', 
+		this.label, 
+		this.textContent
+		].join('<br>')); 
+	  console.log(this);
+	};
+	var myDomOutline = DomOutline({ 
+		onClick: myExampleClickHandler, 
+		filter: false,
+		stopOnClick: false,
+		hideLabel: false
+	});
+	myDomOutline.start();
 
     $('#start').click(function(){
       myDomOutline.start();

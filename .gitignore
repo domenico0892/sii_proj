@@ -1,1 +1,12 @@
 build/*
+/build/
+/target/
+.classpath
+.project
+\./settings/*
+
+.classpath
+
+*.prefs
+
+.settings/org.eclipse.wst.common.project.facet.core.xml
