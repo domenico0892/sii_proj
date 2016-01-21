@@ -1,1 +1,1 @@
-# Progetto SII
+# Progetto SII.
