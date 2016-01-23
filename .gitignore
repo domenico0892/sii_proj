@@ -13,3 +13,4 @@ build/*
 .settings/org.eclipse.wst.common.component
 
 bin/*
+/bin/
