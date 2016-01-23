@@ -3,7 +3,7 @@ build/*
 /target/
 .classpath
 .project
-\./settings/*
+./settings/
 
 .classpath
 
