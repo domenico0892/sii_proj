@@ -1,27 +1,24 @@
 $(document).ready(function() {
-	var myExampleClickHandler = function(event){ 
-		$('#log').html([
-		'<b>Element:</b> ', 
-		this.label, 
-		this.textContent
-		].join('<br>')); 
-	  console.log(this);
-	};
-	var myDomOutline = DomOutline({ 
-		onClick: myExampleClickHandler, 
-		filter: false,
-		stopOnClick: false,
-		hideLabel: false
+var myExampleClickHandler = function(event){ 
+    console.log(this.label);
+    $.ajax({
+        url : "PatternController",
+        type: "get",
+        data: {pattern: this.label},
+        dataType: "text",                   
+        success: function (data){
+        	console.log("OK", data);
+        },
+        error: function (data){
+        	console.log("NO", data);
+        }
 	});
-	myDomOutline.start();
-
-    $('#start').click(function(){
-      myDomOutline.start();
-      return false;
-    })
-
-    $('#stop').click(function(){
-      myDomOutline.stop();
-      return false;
-    })
+};
+  var myDomOutline = DomOutline({ 
+    onClick: myExampleClickHandler, 
+    filter: false,
+    stopOnClick: false,
+    hideLabel: false
+  });
+  myDomOutline.start();
 });
