@@ -18,6 +18,8 @@ import org.jsoup.nodes.Document;
 import it.uniroma3.facade.MongoConnection;
 import it.uniroma3.facade.PaginaFacade;
 import it.uniroma3.facade.PatternFacade;
+import it.uniroma3.model.ContentBlock;
+import it.uniroma3.model.ContentBlockExtractor;
 import it.uniroma3.model.Pagina;
 import it.uniroma3.model.Pattern;
 
@@ -28,10 +30,11 @@ public class TaskController extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) 
 			throws ServletException, IOException {
 
-		String nextPage;
+		String nextPage = "/index.jsp";
 		MongoConnection m = new MongoConnection();
 		PaginaFacade p = new PaginaFacade(m);
 		PatternFacade patt = new PatternFacade(m);
+		HttpSession session = request.getSession();
 
 
 		//richiesta parametri
@@ -44,7 +47,7 @@ public class TaskController extends HttpServlet {
 		List<Pagina> l = p.getPagineByHost(host);
 
 		//ricerca del pattern
-		Pattern pattern = patt.getPatternByHost("host");
+		Pattern pattern = patt.getPatternByHost(host);
 		if (pattern == null) {
 			//analisi pagina inserita
 			if (l.size()>0) {
@@ -53,18 +56,28 @@ public class TaskController extends HttpServlet {
 				doc.getElementsByTag("head").append("<script type=\"text/javascript\" src=\"jquery.js\"/><script type=\"text/javascript\" src=\"jquery.dom-outline-1.0.js\"/><script type=\"text/javascript\" src=\"app.js\"/>");
 				nextPage = "/anteprima.jsp";
 				//String html = "<html><head></head><body><h1>hello world!</h1></body></html>";
-				HttpSession session = request.getSession();
+
 				session.setAttribute("pagina", doc.toString());
 			}
-			else {
-				//qui ci va l'estrazione dei commenti!
-				nextPage = "/index.jsp";
-			}
-			nextPage = response.encodeURL(nextPage);
-			ServletContext application  = getServletContext();
-			RequestDispatcher rd = application.getRequestDispatcher(nextPage);
-			rd.forward(request, response);
 		}
+		else {
+			//qui ci va l'estrazione dei commenti!
+			session.setAttribute("size pagine", l.size());
+			ContentBlockExtractor c = new ContentBlockExtractor(l, pattern);
+			List<ContentBlock> lc = c.extract();
+			session.setAttribute("size cntblk", lc.size());
+			String result = "gg";
+			for (ContentBlock cb : lc) {
+				result = result + cb.getUtente() + " ";
+			}
+			session.setAttribute("titoli", result);
+			
+		}
+		nextPage = response.encodeURL(nextPage);
+		ServletContext application  = getServletContext();
+		RequestDispatcher rd = application.getRequestDispatcher(nextPage);
+		rd.forward(request, response);
+
 		return; 
 	}
 }

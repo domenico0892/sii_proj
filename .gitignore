@@ -3,7 +3,7 @@ build/*
 /target/
 .classpath
 .project
-\./settings/*
+./settings/
 
 .classpath
 
@@ -11,5 +11,6 @@ build/*
 
 .settings/org.eclipse.wst.common.project.facet.core.xml
 .settings/org.eclipse.wst.common.component
-
+.settings/org.eclipse.jdt.core.prefs
 bin/*
+/bin/

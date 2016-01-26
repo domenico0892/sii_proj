@@ -2,10 +2,11 @@
 <html>
 <head>
 <meta charset="US-ASCII">
-<title>siw-servlet-es7</title>
+<title>nnagg</title>
 </head>
 <body>
-<h1>siw-servlet-es7</h1>
-<a href="newTask.jsp">Insert a new product</a>
+<h1>nnagg</h1>
+<a href="newTask.jsp">Inizia un nuovo task!</a><br>
+${titoli}
 </body>
 </html>
