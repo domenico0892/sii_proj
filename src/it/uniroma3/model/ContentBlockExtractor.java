@@ -3,6 +3,7 @@ package it.uniroma3.model;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -37,8 +38,11 @@ public class ContentBlockExtractor {
 						c.setUtente(e.select(this.pattern.getPattern("utente")).text());
 					if (this.pattern.getPattern("data") != null)
 						c.setDataCreazione((e.select(this.pattern.getPattern("data")).text()));
-					if (this.pattern.getPattern("contenuto") != null)
+					if (this.pattern.getPattern("contenuto") != null) {
 						c.setContenuto((e.select(this.pattern.getPattern("contenuto")).text()));
+						List<String> entity = this.matchEntity (e.select(this.pattern.getPattern("contenuto")).text());
+						c.setEnitity(entity);
+					}
 					c.setDataEstrazione(new Date().toString());
 					c.setHost(p.getHost());
 					c.setUrl(p.getUrl());
@@ -49,6 +53,18 @@ public class ContentBlockExtractor {
 		}
 		return list;
 	}
+	
+	public List<String> matchEntity (String contenuto) {
+		List<String> entity = new ArrayList<String>();
+		for (String kw : this.keywords) {
+			java.util.regex.Pattern my_pattern = java.util.regex.Pattern.compile("([^a-z]"+kw+"[^a-z])|(^"+kw+"[^a-z])");
+			Matcher m = my_pattern.matcher(contenuto.toLowerCase());
+			if (m.find()){
+				entity.add(kw);
+			}
+		}
+		return entity;
+	}		
 
 	public List<Pagina> getPagine() {
 		return pagine;

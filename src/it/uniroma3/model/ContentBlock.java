@@ -1,5 +1,8 @@
 package it.uniroma3.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ContentBlock {
 
 	private String url;
@@ -8,6 +11,7 @@ public class ContentBlock {
 	private String dataCreazione;
 	private String dataEstrazione;
 	private String utente;
+	private List<String> entity;
 	
 	public ContentBlock (String url, String host, String contenuto, String dataCreazione, String dataEstrazione, String utente) {
 		this.url = url;
@@ -16,6 +20,7 @@ public class ContentBlock {
 		this.dataCreazione = dataCreazione;
 		this.dataEstrazione = dataEstrazione;
 		this.utente = utente;
+		this.entity = new ArrayList<String>();
 	}
 	
 	public ContentBlock () {}
@@ -67,4 +72,13 @@ public class ContentBlock {
 	public void setUtente(String utente) {
 		this.utente = utente;
 	}
+	
+	public List<String> getEntity() {
+		return this.entity;
+	}
+	
+	public void setEnitity (List<String> l) {
+		this.entity = l;
+	}
+	
 }

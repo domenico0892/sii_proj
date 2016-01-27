@@ -23,6 +23,8 @@ public class ContentBlockFacade {
 		d.append("dataCreazione", c.getDataCreazione());
 		d.append("dataEstrazione", c.getDataEstrazione());
 		d.append("utente", c.getUtente());
+		if (c.getEntity().size()>0)
+			d.append("entity", c.getEntity());
 		return d;
 	}
 

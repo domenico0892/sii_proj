@@ -56,6 +56,7 @@ public class TaskController extends HttpServlet {
 		URL pagina = new URL (url);
 		String host = pagina.getHost();
 		session.setAttribute("url", url);
+		session.setAttribute("keywords", k);
 		List<Pagina> l = this.pgf.getPagineByHost(host);
 
 		//ricerca del pattern
@@ -90,7 +91,7 @@ public class TaskController extends HttpServlet {
 			session.setAttribute("host", pattern.getHost());
 			for (String s : pattern.getPatternMap().keySet())
 				session.setAttribute(s, pattern.getPatternMap().get(s));
-			extractAll(l,pattern,this.mc,session);
+			extractAll(l,pattern,k,this.mc,session);
 			
 		}
 		nextPage = response.encodeURL(nextPage);
@@ -122,16 +123,15 @@ public class TaskController extends HttpServlet {
 		//richiesta parametri
 		HttpSession session = request.getSession(); 
 		String url = (String) session.getAttribute("url");
-		//String keyword = request.getParameter("keyword");
+		List<String> k = (List<String>)session.getAttribute("keywords");
 
 		//parse url per host e estrazione pagine
 		URL pagina = new URL (url);
 		String host = pagina.getHost();
 		List<Pagina> l = this.pgf.getPagineByHost(host);
-
 		//ricerca del pattern
 		Pattern pattern = this.ptf.getPatternByHost(host);	
-		extractAll(l,pattern,this.mc,session);
+		extractAll(l,pattern,k,this.mc,session);
 		String nextPage = response.encodeURL("/index.jsp");
 		ServletContext application  = getServletContext();
 		RequestDispatcher rd = application.getRequestDispatcher(nextPage);
@@ -139,8 +139,8 @@ public class TaskController extends HttpServlet {
 		
 	}
 	
-	public void extractAll(List<Pagina> l, Pattern pattern, MongoConnection m, HttpSession s){
-		ContentBlockExtractor c = new ContentBlockExtractor(l, pattern, null);
+	public void extractAll(List<Pagina> l, Pattern pattern, List<String> kw, MongoConnection m, HttpSession s){
+		ContentBlockExtractor c = new ContentBlockExtractor(l, pattern, kw);
 		List<ContentBlock> lc = c.extract();
 		ContentBlockFacade cbf = new ContentBlockFacade(m);
 		s.setAttribute("size", lc.size());
