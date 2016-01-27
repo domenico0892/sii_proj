@@ -10,7 +10,7 @@ public class Pattern {
 	
 	public Pattern(String host, Map<String, String> patternMap) {
 		this.host = host;
-		this.patternMap = new HashMap<String, String>();
+		this.patternMap = patternMap;
 	}
 
 	public String getHost() {

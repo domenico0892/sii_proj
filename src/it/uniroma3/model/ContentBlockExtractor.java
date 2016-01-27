@@ -37,8 +37,8 @@ public class ContentBlockExtractor {
 						c.setUtente(e.select(this.pattern.getPattern("utente")).text());
 					if (this.pattern.getPattern("data") != null)
 						c.setDataCreazione((e.select(this.pattern.getPattern("data")).text()));
-					if (this.pattern.getPattern("testo") != null)
-						c.setContenuto((e.select(this.pattern.getPattern("testo")).text()));
+					if (this.pattern.getPattern("contenuto") != null)
+						c.setContenuto((e.select(this.pattern.getPattern("contenuto")).text()));
 					c.setDataEstrazione(new Date().toString());
 					c.setHost(p.getHost());
 					c.setUrl(p.getUrl());

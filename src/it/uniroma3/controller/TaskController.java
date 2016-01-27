@@ -86,7 +86,10 @@ public class TaskController extends HttpServlet {
 //				result = result + cb.getUtente() + " ";
 //			}
 //			session.setAttribute("titoli", result);
-			session.setAttribute("blocco", pattern.getPattern("blocco"));
+			session.setAttribute("sizeP", pattern.getPatternMap().size());
+			session.setAttribute("host", pattern.getHost());
+			for (String s : pattern.getPatternMap().keySet())
+				session.setAttribute(s, pattern.getPatternMap().get(s));
 			extractAll(l,pattern,this.mc,session);
 			
 		}
@@ -129,6 +132,10 @@ public class TaskController extends HttpServlet {
 		//ricerca del pattern
 		Pattern pattern = this.ptf.getPatternByHost(host);	
 		extractAll(l,pattern,this.mc,session);
+		String nextPage = response.encodeURL("/index.jsp");
+		ServletContext application  = getServletContext();
+		RequestDispatcher rd = application.getRequestDispatcher(nextPage);
+		rd.forward(request, response);
 		
 	}
 	
