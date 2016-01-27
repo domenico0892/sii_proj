@@ -55,7 +55,6 @@ public class TaskController extends HttpServlet {
 				Document doc = Jsoup.parse(html);
 				doc.getElementsByTag("head").append("<script type=\"text/javascript\" src=\"jquery.js\"/><script type=\"text/javascript\" src=\"jquery.dom-outline-1.0.js\"/><script type=\"text/javascript\" src=\"app.js\"/>");
 				nextPage = "/anteprima.jsp";
-				//String html = "<html><head></head><body><h1>hello world!</h1></body></html>";
 				org.bson.Document patternDoc = new org.bson.Document();
 				patternDoc.append("host", host);
 				session.setAttribute("pattern", patternDoc);
@@ -65,13 +64,15 @@ public class TaskController extends HttpServlet {
 		else {
 			//qui ci va l'estrazione dei commenti!
 			session.setAttribute("size pagine", l.size());
-			ContentBlockExtractor c = new ContentBlockExtractor(l, pattern);
+			ContentBlockExtractor c = new ContentBlockExtractor(l, pattern, null);
 			List<ContentBlock> lc = c.extract();
 			session.setAttribute("size cntblk", lc.size());
 			String result = "gg";
+			/*
 			for (ContentBlock cb : lc) {
 				result = result + cb.getUtente() + " ";
-			}
+			}*/
+			result = result + lc.get(0).getUtente();
 			session.setAttribute("titoli", result);
 			
 		}
@@ -85,6 +86,6 @@ public class TaskController extends HttpServlet {
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) 
 			throws ServletException, IOException {
-		
+		this.doGet(request, response);
 	}
 }
