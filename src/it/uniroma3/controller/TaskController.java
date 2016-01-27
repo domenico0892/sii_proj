@@ -50,6 +50,7 @@ public class TaskController extends HttpServlet {
 		//parse url per host e estrazione pagine
 		URL pagina = new URL (url);
 		String host = pagina.getHost();
+		session.setAttribute("url", url);
 		List<Pagina> l = this.pgf.getPagineByHost(host);
 
 		//ricerca del pattern
@@ -80,7 +81,8 @@ public class TaskController extends HttpServlet {
 //				result = result + cb.getUtente() + " ";
 //			}
 //			session.setAttribute("titoli", result);
-			extractAll(l,pattern,this.mc);
+			session.setAttribute("blocco", pattern.getPattern("blocco"));
+			extractAll(l,pattern,this.mc,session);
 			
 		}
 		nextPage = response.encodeURL(nextPage);
@@ -92,10 +94,10 @@ public class TaskController extends HttpServlet {
 	}
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) 
-
 		throws ServletException, IOException {
 		//richiesta parametri
-		String url = request.getParameter("url");
+		HttpSession session = request.getSession(); 
+		String url = (String) session.getAttribute("url");
 		//String keyword = request.getParameter("keyword");
 
 		//parse url per host e estrazione pagine
@@ -105,15 +107,15 @@ public class TaskController extends HttpServlet {
 
 		//ricerca del pattern
 		Pattern pattern = this.ptf.getPatternByHost(host);	
-		
-		extractAll(l,pattern,this.mc);
+		extractAll(l,pattern,this.mc,session);
 		
 	}
 	
-	public void extractAll(List<Pagina> l, Pattern pattern, MongoConnection m){
+	public void extractAll(List<Pagina> l, Pattern pattern, MongoConnection m, HttpSession s){
 		ContentBlockExtractor c = new ContentBlockExtractor(l, pattern, null);
 		List<ContentBlock> lc = c.extract();
 		ContentBlockFacade cbf = new ContentBlockFacade(m);
+		s.setAttribute("size", lc.size());
 		for (ContentBlock cb : lc){
 			cbf.addContentBlock(cb);
 		}		

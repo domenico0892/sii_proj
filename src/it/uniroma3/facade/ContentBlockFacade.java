@@ -12,7 +12,7 @@ public class ContentBlockFacade {
 	}
 	
 	public void addContentBlock (ContentBlock c) {
-		this.conn.getMongoClient().getDatabase("pagine").getCollection("pagine").insertOne(contentBlock2Document(c));
+		this.conn.getMongoClient().getDatabase("pagine").getCollection("contents").insertOne(contentBlock2Document(c));
 	}
 
 	private Document contentBlock2Document (ContentBlock c) {
