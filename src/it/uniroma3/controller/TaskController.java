@@ -1,7 +1,9 @@
 package it.uniroma3.controller;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -39,8 +41,11 @@ public class TaskController extends HttpServlet {
 
 		//richiesta parametri
 		String url = request.getParameter("url");
-		//String keyword = request.getParameter("keyword");
-
+		String keyword = request.getParameter("keyword");
+		
+		List<String> k = matchEntity(keyword);
+		
+		
 		//parse url per host e estrazione pagine
 		URL pagina = new URL (url);
 		String host = pagina.getHost();
@@ -82,6 +87,22 @@ public class TaskController extends HttpServlet {
 
 		return; 
 	}
+
+	public List<String> matchEntity(String frase){
+		List<String> entity = new ArrayList<String>();
+		
+		
+			String [] sp = frase.split(" ");
+			//Pattern my_pattern = Pattern.compile("([^a-z]"+kw+"[^a-z])|(^"+kw+"[^a-z])");
+			//Matcher m = my_pattern.matcher(frase.toLowerCase());
+			//if (m.find()){
+			for (String kw: sp){
+				entity.add(kw);
+			}
+			//}
+		return entity;
+	}		
+
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) 
 			throws ServletException, IOException {

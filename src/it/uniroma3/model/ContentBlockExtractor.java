@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 public class ContentBlockExtractor {
 	
@@ -18,14 +20,17 @@ public class ContentBlockExtractor {
 	
 	public List<ContentBlock> extract () {
 		List<ContentBlock> list = new ArrayList<ContentBlock>();
-		
+		//:contains(text): find elements that contain the given text.
+		//The search is case-insensitive; e.g. p:contains(jsoup)
 		for(Pagina p: this.pagine){
 			String html = p.getHtml();
 			Document doc = Jsoup.parse(html);
 			
-			String titolo = doc.toString();
+			//Elements commento = doc.select("img[src$=.png]");
+			Elements commenti = doc.select("p.testoPost");
+			//String text = doc.body().text(); 
 			ContentBlock c = new ContentBlock();
-			c.setUtente(titolo);
+			c.setUtente(commenti.text());
 			list.add(c);
 		}
 		return list;
