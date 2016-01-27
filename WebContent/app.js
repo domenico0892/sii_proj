@@ -1,10 +1,11 @@
 $(document).ready(function() {
 var myExampleClickHandler = function(event){ 
     console.log(this.label);
+    var retVal = prompt("Nome del campo: ","");
     $.ajax({
         url : "PatternController",
         type: "get",
-        data: {pattern: this.label},
+        data: {name:retVal, newPattern: this.label},
         dataType: "text",                   
         success: function (data){
         	console.log("OK", data);

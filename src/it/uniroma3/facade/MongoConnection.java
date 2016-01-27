@@ -14,4 +14,8 @@ public class MongoConnection {
 	public MongoClient getMongoClient() {
 		return this.mongoClient;
 	}
+	
+	public void close() {
+		this.mongoClient.close();
+	}
 }

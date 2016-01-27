@@ -56,7 +56,9 @@ public class TaskController extends HttpServlet {
 				doc.getElementsByTag("head").append("<script type=\"text/javascript\" src=\"jquery.js\"/><script type=\"text/javascript\" src=\"jquery.dom-outline-1.0.js\"/><script type=\"text/javascript\" src=\"app.js\"/>");
 				nextPage = "/anteprima.jsp";
 				//String html = "<html><head></head><body><h1>hello world!</h1></body></html>";
-
+				org.bson.Document patternDoc = new org.bson.Document();
+				patternDoc.append("host", host);
+				session.setAttribute("pattern", patternDoc);
 				session.setAttribute("pagina", doc.toString());
 			}
 		}
@@ -79,5 +81,10 @@ public class TaskController extends HttpServlet {
 		rd.forward(request, response);
 
 		return; 
+	}
+	
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) 
+			throws ServletException, IOException {
+		
 	}
 }

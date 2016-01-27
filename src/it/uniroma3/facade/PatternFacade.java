@@ -28,6 +28,10 @@ public class PatternFacade {
 		this.conn.getMongoClient().getDatabase("pagine").getCollection("pattern").insertOne(pattern2Document(p));
 	}
 	
+	public void addPatternDocument (Document d) {
+		this.conn.getMongoClient().getDatabase("pagine").getCollection("pattern").insertOne(d);
+	}
+	
 	private Document pattern2Document (Pattern p) {
 		Document d = new Document();
 		d.append("host", p.getHost());
