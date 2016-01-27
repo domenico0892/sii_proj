@@ -40,7 +40,7 @@ public class PatternController extends HttpServlet {
 		Document doc = (Document)session.getAttribute("pattern");
 		p.addPatternDocument(doc);
 		m.close();
-		String nextPage = response.encodeURL("/index.jsp");
+		String nextPage = response.encodeURL("/task");
 		ServletContext application  = getServletContext();
 		RequestDispatcher rd = application.getRequestDispatcher(nextPage);
 		rd.forward(request, response);

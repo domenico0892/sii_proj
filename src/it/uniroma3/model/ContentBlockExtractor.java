@@ -1,6 +1,7 @@
 package it.uniroma3.model;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.jsoup.Jsoup;
@@ -9,29 +10,42 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 public class ContentBlockExtractor {
-	
+
 	private List<Pagina> pagine;
 	private Pattern pattern;
-	
-	public ContentBlockExtractor (List<Pagina> pagine, Pattern pattern) {
+	private List<String> keywords;
+
+	public ContentBlockExtractor (List<Pagina> pagine, Pattern pattern, List<String> kw) {
 		this.pagine = pagine;
 		this.pattern = pattern;
+		this.keywords = kw;
 	}
-	
+
 	public List<ContentBlock> extract () {
 		List<ContentBlock> list = new ArrayList<ContentBlock>();
-		//:contains(text): find elements that contain the given text.
-		//The search is case-insensitive; e.g. p:contains(jsoup)
+
 		for(Pagina p: this.pagine){
 			String html = p.getHtml();
 			Document doc = Jsoup.parse(html);
-			
-			//Elements commento = doc.select("img[src$=.png]");
-			Elements commenti = doc.select("p.testoPost");
-			//String text = doc.body().text(); 
-			ContentBlock c = new ContentBlock();
-			c.setUtente(commenti.text());
-			list.add(c);
+
+			//sezione di estrazione commenti
+			if (this.pattern.getPattern("blocco") != null) {
+				Elements es = doc.select(this.pattern.getPattern("blocco"));
+				for (Element e : es) {
+					ContentBlock c = new ContentBlock();
+					if (this.pattern.getPattern("utente") != null) 
+						c.setUtente(e.select(this.pattern.getPattern("utente")).text());
+					if (this.pattern.getPattern("data") != null)
+						c.setDataCreazione((e.select(this.pattern.getPattern("data")).text()));
+					if (this.pattern.getPattern("testo") != null)
+						c.setContenuto((e.select(this.pattern.getPattern("testo")).text()));
+					c.setDataEstrazione(new Date().toString());
+					c.setHost(p.getHost());
+					c.setUrl(p.getUrl());
+					list.add(c);
+				}
+			}
+
 		}
 		return list;
 	}
