@@ -26,14 +26,19 @@ import it.uniroma3.model.Pattern;
 @WebServlet("/task")
 public class TaskController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-
+	private MongoConnection mc = new MongoConnection();
+	private String nextPage = "/index.jsp";
+	private PaginaFacade pgf = new PaginaFacade(mc);
+	private PatternFacade ptf = new PatternFacade(mc);
+	
+	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) 
 			throws ServletException, IOException {
 
-		String nextPage = "/index.jsp";
-		MongoConnection m = new MongoConnection();
-		PaginaFacade p = new PaginaFacade(m);
-		PatternFacade patt = new PatternFacade(m);
+//		String nextPage = "/index.jsp";
+//		MongoConnection m = new MongoConnection();
+//		PaginaFacade p = new PaginaFacade(m);
+//		PatternFacade patt = new PatternFacade(m);
 		HttpSession session = request.getSession();
 
 
@@ -44,10 +49,11 @@ public class TaskController extends HttpServlet {
 		//parse url per host e estrazione pagine
 		URL pagina = new URL (url);
 		String host = pagina.getHost();
-		List<Pagina> l = p.getPagineByHost(host);
+		List<Pagina> l = this.pgf.getPagineByHost(host);
 
 		//ricerca del pattern
-		Pattern pattern = patt.getPatternByHost(host);
+		Pattern pattern = this.ptf.getPatternByHost(host);
+		
 		if (pattern == null) {
 			//analisi pagina inserita
 			if (l.size()>0) {
@@ -64,15 +70,16 @@ public class TaskController extends HttpServlet {
 		}
 		else {
 			//qui ci va l'estrazione dei commenti!
-			session.setAttribute("size pagine", l.size());
-			ContentBlockExtractor c = new ContentBlockExtractor(l, pattern);
-			List<ContentBlock> lc = c.extract();
-			session.setAttribute("size cntblk", lc.size());
-			String result = "gg";
-			for (ContentBlock cb : lc) {
-				result = result + cb.getUtente() + " ";
-			}
-			session.setAttribute("titoli", result);
+//			session.setAttribute("size pagine", l.size());
+//			ContentBlockExtractor c = new ContentBlockExtractor(l, pattern);
+//			List<ContentBlock> lc = c.extract();
+//			session.setAttribute("size cntblk", lc.size());
+//			String result = "gg";
+//			for (ContentBlock cb : lc) {
+//				result = result + cb.getUtente() + " ";
+//			}
+//			session.setAttribute("titoli", result);
+			extractAll(l,pattern,this.mc);
 			
 		}
 		nextPage = response.encodeURL(nextPage);
@@ -84,7 +91,29 @@ public class TaskController extends HttpServlet {
 	}
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) 
-			throws ServletException, IOException {
+		throws ServletException, IOException {
+		//richiesta parametri
+		String url = request.getParameter("url");
+		//String keyword = request.getParameter("keyword");
+
+		//parse url per host e estrazione pagine
+		URL pagina = new URL (url);
+		String host = pagina.getHost();
+		List<Pagina> l = this.pgf.getPagineByHost(host);
+
+		//ricerca del pattern
+		Pattern pattern = this.ptf.getPatternByHost(host);	
 		
+		extractAll(l,pattern,this.mc);
+		
+	}
+	
+	public void extractAll(List<Pagina> l, Pattern pattern, MongoConnection m){
+		ContentBlockExtractor c = new ContentBlockExtractor(l, pattern);
+		List<ContentBlock> lc = c.extract();
+		ContentBlockFacade cbf = new ContentBlockFacade(m);
+		for (ContentBlock cb : lc){
+			cbf.addContentBlock(cb);
+		}		
 	}
 }
