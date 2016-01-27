@@ -45,6 +45,7 @@ public class ContentBlockExtractor {
 					list.add(c);
 				}
 			}
+
 		}
 		return list;
 	}
