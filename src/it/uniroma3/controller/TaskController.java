@@ -3,7 +3,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -58,17 +57,24 @@ public class TaskController extends HttpServlet {
 		session.setAttribute("url", url);
 		session.setAttribute("keywords", k);
 		List<Pagina> l = this.pgf.getPagineByHost(host);
-
+		
+		Pagina daPresentare = null;
+		for (Pagina pag : l) {
+			if (pag.getUrl().equals(url))
+				daPresentare = pag;
+		}
+		
 		//ricerca del pattern
 		Pattern pattern = this.ptf.getPatternByHost(host);
 		
 		if (pattern == null) {
 			//analisi pagina inserita
 			if (l.size()>0) {
-				String html = l.get(0).getHtml();
+				//String html = l.get(0).getHtml();
+				String html = daPresentare.getHtml();
 				Document doc = Jsoup.parse(html);
-				doc.getElementsByTag("head").append("<script type=\"text/javascript\" src=\"jquery.js\"/><script type=\"text/javascript\" src=\"jquery.dom-outline-1.0.js\"/><script type=\"text/javascript\" src=\"app.js\"/>");
-				nextPage = "/anteprima.jsp";
+				//doc.getElementsByTag("head").append("<script type=\"text/javascript\" src=\"jquery.js\"/><script type=\"text/javascript\" src=\"jquery.dom-outline-1.0.js\"/><script type=\"text/javascript\" src=\"app.js\"/>");
+				this.nextPage = "/anteprima.jsp";
 				org.bson.Document patternDoc = new org.bson.Document();
 				patternDoc.append("host", host);
 				session.setAttribute("pattern", patternDoc);
@@ -132,7 +138,7 @@ public class TaskController extends HttpServlet {
 		//ricerca del pattern
 		Pattern pattern = this.ptf.getPatternByHost(host);	
 		extractAll(l,pattern,k,this.mc,session);
-		String nextPage = response.encodeURL("/index.jsp");
+		this.nextPage = response.encodeURL("/index.jsp");
 		ServletContext application  = getServletContext();
 		RequestDispatcher rd = application.getRequestDispatcher(nextPage);
 		rd.forward(request, response);
