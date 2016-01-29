@@ -6,11 +6,15 @@ import java.util.Map;
 public class Pattern {
 	
 	private String host;
-	private Map<String, String> patternMap;
-	
-	public Pattern(String host, Map<String, String> patternMap) {
+	private Map<String, Map<String, String>> patternMap;	
+
+	public Pattern(String host, Map<String, Map<String, String>> patternMap) {
 		this.host = host;
 		this.patternMap = patternMap;
+	}
+	
+	public Pattern () {
+		this.patternMap = new HashMap<>();
 	}
 
 	public String getHost() {
@@ -21,23 +25,22 @@ public class Pattern {
 		this.host = host;
 	}
 	
-	public void addPattern (String key, String patt) {
-		this.patternMap.put(key, patt);
+	public void putPadre (String name, String tag) {
+		Map<String,String> m = new HashMap<>();
+		m.put("tag", tag);
+		this.patternMap.put(name, m);
 	}
 	
-	public String getPattern (String key) {
-		return this.patternMap.get(key);
+	public void putFiglio (String padre, String name, String tag) {
+		this.patternMap.get(padre).put(name, tag);
 	}
 	
-	public Map<String, String> getPatternMap () {
+	public Map<String, String> getPadre (String name) {
+		return this.patternMap.get(name);
+	}
+
+	
+	public Map<String, Map<String, String>> getPatternMap () {
 		return this.patternMap;
 	}
-
-	/*public Map<String, String> getPattern() {
-		return pattern;
-	}
-
-	public void setPattern(Map<String, String> pattern) {
-		this.pattern = pattern;
-	}*/
 }

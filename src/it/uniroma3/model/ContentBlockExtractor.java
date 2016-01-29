@@ -2,7 +2,10 @@ package it.uniroma3.model;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 
 import org.jsoup.Jsoup;
@@ -29,33 +32,40 @@ public class ContentBlockExtractor {
 			String html = p.getHtml();
 			Document doc = Jsoup.parse(html);
 
-			//sezione di estrazione commenti
-			if (this.pattern.getPattern("blocco") != null) {
-				Elements es = doc.select(this.pattern.getPattern("blocco"));
+			//per ora solo CB tipati, cioè del tipo padre.figlio
+			for (String keyPadre : this.pattern.getPatternMap().keySet()) {
+				Map<String, String> m = this.pattern.getPadre(keyPadre);
+				Elements es = doc.select(m.get("tag"));
 				for (Element e : es) {
 					ContentBlock c = new ContentBlock();
-					if (this.pattern.getPattern("utente") != null) 
-						c.setUtente(e.select(this.pattern.getPattern("utente")).text());
-					if (this.pattern.getPattern("data") != null)
-						c.setDataCreazione((e.select(this.pattern.getPattern("data")).text()));
-					if (this.pattern.getPattern("contenuto") != null) {
-						c.setContenuto((e.select(this.pattern.getPattern("contenuto")).text()));
-						List<String> entity = this.matchEntity (e.select(this.pattern.getPattern("contenuto")).text());
-						c.setEnitity(entity);
-					}
 					c.setDataEstrazione(new Date().toString());
 					c.setHost(p.getHost());
 					c.setUrl(p.getUrl());
+					c.setType(keyPadre);
+					if (m.size() == 1) {
+						c.addValue(keyPadre, e.text());
+						for (String s : matchEntity(e.text()))
+							c.addEntity(s);
+					}
+					else {
+						for (String keyFiglio : this.pattern.getPadre(keyPadre).keySet()) {
+							if (!keyFiglio.equals("tag")) {
+								String text = e.select(m.get(keyFiglio)).text();
+								c.addValue(keyFiglio, text);
+								for (String s : matchEntity(text))
+									c.addEntity(s);
+							}
+						}
+					}
 					list.add(c);
 				}
 			}
-
 		}
 		return list;
 	}
-	
-	public List<String> matchEntity (String contenuto) {
-		List<String> entity = new ArrayList<String>();
+
+	public Set<String> matchEntity (String contenuto) {
+		Set<String> entity = new HashSet<String>();
 		for (String kw : this.keywords) {
 			java.util.regex.Pattern my_pattern = java.util.regex.Pattern.compile("([^a-z]"+kw+"[^a-z])|(^"+kw+"[^a-z])");
 			Matcher m = my_pattern.matcher(contenuto.toLowerCase());

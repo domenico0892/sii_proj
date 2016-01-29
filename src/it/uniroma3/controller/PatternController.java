@@ -2,7 +2,6 @@ package it.uniroma3.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.RequestDispatcher;
@@ -14,10 +13,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.bson.Document;
-
 import it.uniroma3.facade.MongoConnection;
 import it.uniroma3.facade.PatternFacade;
+import it.uniroma3.model.Pattern;
 
 @WebServlet("/PatternController")
 public class PatternController extends HttpServlet {
@@ -29,17 +27,26 @@ public class PatternController extends HttpServlet {
 		String pattern = request.getParameter("newPattern");
 		String name = request.getParameter("name");
 		HttpSession session = request.getSession();
-		Document doc = (Document)session.getAttribute("pattern");
+		Pattern p = (Pattern) session.getAttribute("pattern");
 		List<String> res = this.split(name);
 		if (res.size() == 1) {
+			p.putPadre(name, pattern);
+		}
+		if (res.size() == 2) {
+			p.putFiglio(res.get(0), res.get(1), pattern);
+		}
+		
+		//Document doc = (Document)session.getAttribute("pattern");
+		
+		/*if (res.size() == 1) {
 			doc.append(name, new Document().append("tag",pattern).append("figli", new Document()));
 		}
 		if (res.size() == 2) {
 			Document padre = (Document) doc.get(res.get(0));
 			Document figli = (Document) padre.get("figli");
 			figli.append(res.get(1), pattern);
-		}
-		session.setAttribute("pattern", doc);
+		}*/
+		session.setAttribute("pattern", p);
 	}
 
 	@Override
@@ -48,8 +55,9 @@ public class PatternController extends HttpServlet {
 		MongoConnection m = new MongoConnection();
 		PatternFacade p = new PatternFacade(m);
 		HttpSession session = request.getSession();
-		Document doc = (Document)session.getAttribute("pattern");
-		p.addPatternDocument(doc);
+		//Document doc = (Document)session.getAttribute("pattern");
+		Pattern patt = (Pattern)session.getAttribute("pattern");
+		p.addPattern(patt);
 		m.close();
 		String nextPage = response.encodeURL("/task");
 		ServletContext application  = getServletContext();

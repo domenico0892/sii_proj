@@ -75,9 +75,9 @@ public class TaskController extends HttpServlet {
 				Document doc = Jsoup.parse(html);
 				//doc.getElementsByTag("head").append("<script type=\"text/javascript\" src=\"jquery.js\"/><script type=\"text/javascript\" src=\"jquery.dom-outline-1.0.js\"/><script type=\"text/javascript\" src=\"app.js\"/>");
 				this.nextPage = "/anteprima.jsp";
-				org.bson.Document patternDoc = new org.bson.Document();
-				patternDoc.append("host", host);
-				session.setAttribute("pattern", patternDoc);
+				Pattern newPat = new Pattern();
+				newPat.setHost(host);
+				session.setAttribute("pattern", newPat);
 				session.setAttribute("pagina", doc.toString());
 			}
 		}
@@ -129,6 +129,7 @@ public class TaskController extends HttpServlet {
 		//richiesta parametri
 		HttpSession session = request.getSession(); 
 		String url = (String) session.getAttribute("url");
+		@SuppressWarnings("unchecked")
 		List<String> k = (List<String>)session.getAttribute("keywords");
 
 		//parse url per host e estrazione pagine

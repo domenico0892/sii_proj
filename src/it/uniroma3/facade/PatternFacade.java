@@ -1,8 +1,5 @@
 package it.uniroma3.facade;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.bson.Document;
 
 import com.mongodb.client.FindIterable;
@@ -31,25 +28,27 @@ public class PatternFacade {
 		this.conn.getMongoClient().getDatabase("pagine").getCollection("pattern").insertOne(pattern2Document(p));
 	}
 
-	public void addPatternDocument (Document d) {
-		this.conn.getMongoClient().getDatabase("pagine").getCollection("pattern").insertOne(d);
-	}
-
 	private Document pattern2Document (Pattern p) {
 		Document d = new Document();
 		d.append("host", p.getHost());
-		for (String key:p.getPatternMap().keySet())
-			d.append(key, p.getPatternMap().get(key));
+		d.append("patterns", p.getPatternMap());
+		/*for (String key:p.getPatternMap().keySet())
+			d.append(key, p.getPatternMap().get(key));*/
 		return d;
 	}
 
 	private Pattern document2Pattern (Document d) {
-		String host = d.getString("host");
-		Map<String, String> mappa = new HashMap<String, String>();
-		for (String key : d.keySet()) 
-			if (!key.equals("_id") && !key.equals("host"))
-				mappa.put(key, d.getString(key));		
-		return new Pattern(host, mappa);
+		Pattern p = new Pattern();
+		p.setHost(d.getString("host"));
+		Document patterns = (Document) d.get("patterns");
+		for (String padre : patterns.keySet()) {
+			Document docPadre = (Document)patterns.get(padre);
+			p.putPadre(padre, docPadre.getString("tag"));
+			for (String figlio : docPadre.keySet())
+				if (!figlio.equals("tag"))
+					p.putFiglio(padre, figlio, docPadre.getString(figlio));
+		}	
+		return p;
 	}
 }
 

@@ -10,7 +10,7 @@ public class ContentBlockFacade {
 	public ContentBlockFacade (MongoConnection m) {
 		this.conn = m;
 	}
-	
+
 	public void addContentBlock (ContentBlock c) {
 		this.conn.getMongoClient().getDatabase("pagine").getCollection("contents").insertOne(contentBlock2Document(c));
 	}
@@ -19,13 +19,13 @@ public class ContentBlockFacade {
 		Document d = new Document();
 		d.append("url", c.getUrl());
 		d.append("host", c.getHost());
-		d.append("contenuto", c.getContenuto());
-		d.append("dataCreazione", c.getDataCreazione());
 		d.append("dataEstrazione", c.getDataEstrazione());
-		d.append("utente", c.getUtente());
-		if (c.getEntity().size()>0)
-			d.append("entity", c.getEntity());
+		d.append("type", c.getType());
+		for (String s : c.getValues().keySet()) {
+			d.append(s, c.getValues().get(s));
+			if (c.getEntities().size()>0)
+				d.append("entities", c.getEntities());
+		}
 		return d;
 	}
-
 }
