@@ -80,6 +80,8 @@ public class TaskController extends HttpServlet {
 				session.setAttribute("pattern", newPat);
 				session.setAttribute("pagina", doc.toString());
 			}
+			else
+				request.setAttribute("stato", "nessuna pagina inserita");
 		}
 		else {
 			//qui ci va l'estrazione dei commenti!
@@ -97,7 +99,8 @@ public class TaskController extends HttpServlet {
 			session.setAttribute("host", pattern.getHost());
 			for (String s : pattern.getPatternMap().keySet())
 				session.setAttribute(s, pattern.getPatternMap().get(s));
-			extractAll(l,pattern,k,this.mc,session);
+			int size = extractAll(l,pattern,k,this.mc,session);
+			request.setAttribute("stato", "estratti "+size+" content block");
 			
 		}
 		nextPage = response.encodeURL(nextPage);
@@ -138,7 +141,8 @@ public class TaskController extends HttpServlet {
 		List<Pagina> l = this.pgf.getPagineByHost(host);
 		//ricerca del pattern
 		Pattern pattern = this.ptf.getPatternByHost(host);	
-		extractAll(l,pattern,k,this.mc,session);
+		int size = extractAll(l,pattern,k,this.mc,session);
+		request.setAttribute("stato", "estratti "+size+" content block");
 		this.nextPage = response.encodeURL("/index.jsp");
 		ServletContext application  = getServletContext();
 		RequestDispatcher rd = application.getRequestDispatcher(nextPage);
@@ -146,13 +150,14 @@ public class TaskController extends HttpServlet {
 		
 	}
 	
-	public void extractAll(List<Pagina> l, Pattern pattern, List<String> kw, MongoConnection m, HttpSession s){
+	public int extractAll(List<Pagina> l, Pattern pattern, List<String> kw, MongoConnection m, HttpSession s){
 		ContentBlockExtractor c = new ContentBlockExtractor(l, pattern, kw);
 		List<ContentBlock> lc = c.extract();
 		ContentBlockFacade cbf = new ContentBlockFacade(m);
 		s.setAttribute("size", lc.size());
 		for (ContentBlock cb : lc){
 			cbf.addContentBlock(cb);
-		}		
+		}
+		return lc.size();
 	}
 }
