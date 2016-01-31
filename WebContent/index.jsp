@@ -25,8 +25,6 @@
 			</table>
 		</form>
 	</div>
-	<div>
-		Stato: ${stato}
-	</div>
+	<div>Stato: ${stato}</div>
 </body>
 </html>

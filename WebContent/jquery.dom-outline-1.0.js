@@ -27,7 +27,8 @@ var DomOutline = function (options) {
         keyCodes: {
             BACKSPACE: 8,
             ESC: 27,
-            DELETE: 46
+            DELETE: 46,
+            RETURN : 13
         },
         active: false,
         initialized: false,
@@ -146,6 +147,11 @@ var DomOutline = function (options) {
         if (e.keyCode === self.keyCodes.ESC || e.keyCode === self.keyCodes.BACKSPACE || e.keyCode === self.keyCodes.DELETE) {
             pub.stop();
         }
+        if (e.keyCode === self.keyCodes.RETURN) {
+        	pub.stop();
+        	document.getElementById("progettosii").click();
+        } 
+        
 
         return false;
     }

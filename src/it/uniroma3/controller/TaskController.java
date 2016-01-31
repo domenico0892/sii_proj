@@ -37,124 +37,114 @@ public class TaskController extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) 
 			throws ServletException, IOException {
 
-//		String nextPage = "/index.jsp";
-//		MongoConnection m = new MongoConnection();
-//		PaginaFacade p = new PaginaFacade(m);
-//		PatternFacade patt = new PatternFacade(m);
-		HttpSession session = request.getSession();
 
+		HttpSession session = request.getSession(); //1
 
-		//richiesta parametri
+		//richiesta parametri //2
 		String url = request.getParameter("url");
 		String keyword = request.getParameter("keyword");
-		
 		List<String> k = matchEntity(keyword);
 		
 		
-		//parse url per host e estrazione pagine
+		//parse url per host e estrazione pagine //3
 		URL pagina = new URL (url);
 		String host = pagina.getHost();
-		session.setAttribute("url", url);
-		session.setAttribute("keywords", k);
+		session.setAttribute("url", url); // da levare?
+		session.setAttribute("keywords", k); // da levare?
 		List<Pagina> l = this.pgf.getPagineByHost(host);
 		
-		Pagina daPresentare = null;
-		for (Pagina pag : l) {
-			if (pag.getUrl().equals(url))
-				daPresentare = pag;
-		}
-		
-		//ricerca del pattern
+		//ricerca del pattern //4
 		Pattern pattern = this.ptf.getPatternByHost(host);
 		
 		if (pattern == null) {
-			//analisi pagina inserita
 			if (l.size()>0) {
+				Pagina daPresentare = null;
+				for (Pagina pag : l) {
+					if (pag.getUrl().equals(url))
+						daPresentare = pag;
+				}
 				//String html = l.get(0).getHtml();
 				String html = daPresentare.getHtml();
 				Document doc = Jsoup.parse(html);
-				//doc.getElementsByTag("head").append("<script type=\"text/javascript\" src=\"jquery.js\"/><script type=\"text/javascript\" src=\"jquery.dom-outline-1.0.js\"/><script type=\"text/javascript\" src=\"app.js\"/>");
+				doc.getElementsByTag("head").append("<script type=\"text/javascript\" src=\"jquery.js\"/><script type=\"text/javascript\" src=\"jquery.dom-outline-1.0.js\"/><script type=\"text/javascript\" src=\"app.js\"/>");
+				doc.getElementsByTag("body").prepend("<div><form action=\"PatternController\" method=\"post\"><input id=\"progettosii\" type=\"submit\" name=\"submit\" value=\"ho finito!\"/></form></div>");
 				this.nextPage = "/anteprima.jsp";
 				Pattern newPat = new Pattern();
 				newPat.setHost(host);
 				session.setAttribute("pattern", newPat);
 				session.setAttribute("pagina", doc.toString());
 			}
-			else
-				request.setAttribute("stato", "nessuna pagina inserita");
+	else {
+				request.setAttribute("errore", "Nessuna pagina trovata!");
+			}
 		}
 		else {
-			//qui ci va l'estrazione dei commenti!
-
-//			session.setAttribute("size pagine", l.size());
-//			ContentBlockExtractor c = new ContentBlockExtractor(l, pattern);
-//			List<ContentBlock> lc = c.extract();
-//			session.setAttribute("size cntblk", lc.size());
-//			String result = "gg";
-//			for (ContentBlock cb : lc) {
-//				result = result + cb.getUtente() + " ";
-//			}
-//			session.setAttribute("titoli", result);
-			session.setAttribute("sizeP", pattern.getPatternMap().size());
-			session.setAttribute("host", pattern.getHost());
-			for (String s : pattern.getPatternMap().keySet())
-				session.setAttribute(s, pattern.getPatternMap().get(s));
-			int size = extractAll(l,pattern,k,this.mc,session);
+			//estrazione    //5
+			session.setAttribute("host", pattern.getHost()); // da levare?
+			int size = extractAll(l,pattern,k,this.mc);
 			request.setAttribute("stato", "estratti "+size+" content block");
-			
+
 		}
-		nextPage = response.encodeURL(nextPage);
+		
+		//prossima pagina //6
+		this.nextPage = response.encodeURL(this.nextPage);
 		ServletContext application  = getServletContext();
-		RequestDispatcher rd = application.getRequestDispatcher(nextPage);
+		RequestDispatcher rd = application.getRequestDispatcher(this.nextPage);
 		rd.forward(request, response);
 
 		return; 
 	}
 
-	public List<String> matchEntity(String frase){
-		List<String> entity = new ArrayList<String>();
-		
-		
-			String [] sp = frase.split(" ");
-			//Pattern my_pattern = Pattern.compile("([^a-z]"+kw+"[^a-z])|(^"+kw+"[^a-z])");
-			//Matcher m = my_pattern.matcher(frase.toLowerCase());
-			//if (m.find()){
-			for (String kw: sp){
-				entity.add(kw);
-			}
-			//}
-		return entity;
-	}		
-
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) 
 		throws ServletException, IOException {
-		//richiesta parametri
-		HttpSession session = request.getSession(); 
+		
+		
+		HttpSession session = request.getSession(); //1
+		
+		//richiesta parametri //2
 		String url = (String) session.getAttribute("url");
 		@SuppressWarnings("unchecked")
 		List<String> k = (List<String>)session.getAttribute("keywords");
 
-		//parse url per host e estrazione pagine
+		//parse url per host e estrazione pagine //3
 		URL pagina = new URL (url);
 		String host = pagina.getHost();
 		List<Pagina> l = this.pgf.getPagineByHost(host);
-		//ricerca del pattern
+		
+		//ricerca del pattern //4
 		Pattern pattern = this.ptf.getPatternByHost(host);	
-		int size = extractAll(l,pattern,k,this.mc,session);
+
+		
+		//estrazione //5
+		int size = extractAll(l,pattern,k,this.mc);
 		request.setAttribute("stato", "estratti "+size+" content block");
+
+		//prossima pagina //6
 		this.nextPage = response.encodeURL("/index.jsp");
 		ServletContext application  = getServletContext();
-		RequestDispatcher rd = application.getRequestDispatcher(nextPage);
+		RequestDispatcher rd = application.getRequestDispatcher(this.nextPage);
 		rd.forward(request, response);
 		
 	}
 	
-	public int extractAll(List<Pagina> l, Pattern pattern, List<String> kw, MongoConnection m, HttpSession s){
+
+
+	public List<String> matchEntity(String frase){
+		List<String> entity = new ArrayList<String>();
+		String [] sp = frase.split(" ");
+			for (String kw: sp){
+				entity.add(kw);
+			}
+		return entity;
+	}		
+	
+	
+	public int extractAll(List<Pagina> l, Pattern pattern, List<String> kw, MongoConnection m){
+
 		ContentBlockExtractor c = new ContentBlockExtractor(l, pattern, kw);
 		List<ContentBlock> lc = c.extract();
 		ContentBlockFacade cbf = new ContentBlockFacade(m);
-		s.setAttribute("size", lc.size());
 		for (ContentBlock cb : lc){
 			cbf.addContentBlock(cb);
 		}
