@@ -15,6 +15,7 @@ import javax.servlet.http.HttpSession;
 
 import it.uniroma3.facade.MongoConnection;
 import it.uniroma3.facade.PatternFacade;
+import it.uniroma3.model.ContentBlockType;
 import it.uniroma3.model.Pattern;
 
 @WebServlet("/PatternController")
@@ -30,10 +31,10 @@ public class PatternController extends HttpServlet {
 		Pattern p = (Pattern) session.getAttribute("pattern");
 		List<String> res = this.split(name);
 		if (res.size() == 1) {
-			p.putPadre(name, pattern);
+			p.putContentBlockType(new ContentBlockType(name, pattern));
 		}
 		if (res.size() == 2) {
-			p.putFiglio(res.get(0), res.get(1), pattern);
+			p.putFiglio(p.getContentBlockTypeByName(res.get(0)), res.get(1), pattern);
 		}
 		
 		//Document doc = (Document)session.getAttribute("pattern");

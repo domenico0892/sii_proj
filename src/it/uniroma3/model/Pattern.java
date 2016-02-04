@@ -6,9 +6,9 @@ import java.util.Map;
 public class Pattern {
 	
 	private String host;
-	private Map<String, Map<String, String>> patternMap;	
+	private Map<ContentBlockType, Map<String, String>> patternMap;	
 
-	public Pattern(String host, Map<String, Map<String, String>> patternMap) {
+	public Pattern(String host, Map<ContentBlockType, Map<String, String>> patternMap) {
 		this.host = host;
 		this.patternMap = patternMap;
 	}
@@ -25,22 +25,27 @@ public class Pattern {
 		this.host = host;
 	}
 	
-	public void putPadre (String name, String tag) {
-		Map<String,String> m = new HashMap<>();
-		m.put("tag", tag);
-		this.patternMap.put(name, m);
+	public void putContentBlockType (ContentBlockType c) {
+		this.patternMap.put(c, new HashMap<>());
 	}
 	
-	public void putFiglio (String padre, String name, String tag) {
-		this.patternMap.get(padre).put(name, tag);
+	public void putFiglio (ContentBlockType c, String name, String tag) {
+		this.patternMap.get(c).put(name, tag);
 	}
 	
-	public Map<String, String> getPadre (String name) {
-		return this.patternMap.get(name);
+	public Map<String, String> getFigliByContentBlockType (ContentBlockType c) {
+		return this.patternMap.get(c);
+	}
+	
+	public ContentBlockType getContentBlockTypeByName (String name) {
+		for (ContentBlockType c : this.patternMap.keySet()) 
+			if (c.getName().equals(name))
+				return c;
+		return null;
 	}
 
 	
-	public Map<String, Map<String, String>> getPatternMap () {
+	public Map<ContentBlockType, Map<String, String>> getPatternMap () {
 		return this.patternMap;
 	}
 }

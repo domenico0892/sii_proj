@@ -33,31 +33,29 @@ public class ContentBlockExtractor {
 			Document doc = Jsoup.parse(html);
 
 			//per ora solo CB tipati, cioè del tipo padre.figlio
-			for (String keyPadre : this.pattern.getPatternMap().keySet()) {
-				Map<String, String> m = this.pattern.getPadre(keyPadre);
-				Elements es = doc.select(m.get("tag"));
+			for (ContentBlockType keyPadre : this.pattern.getPatternMap().keySet()) {
+				Map<String, String> m = this.pattern.getFigliByContentBlockType(keyPadre);
+				Elements es = doc.select(m.get(keyPadre.getTag()));
 				for (Element e : es) {
 					ContentBlock c = new ContentBlock();
 					c.setDataEstrazione(new Date().toString());
 					c.setHost(p.getHost());
 					c.setUrl(p.getUrl());
-					c.setType(keyPadre);
+					c.setType(keyPadre.getName());
 					if (m.size() == 1) {
-						c.addValue(keyPadre, e.text());
+						c.addValue(keyPadre.getName(), e.text());
 						for (String s : matchEntity(e.text()))
 							c.addEntity(s);
 					}
 					else {
-						for (String keyFiglio : this.pattern.getPadre(keyPadre).keySet()) {
-							if (!keyFiglio.equals("tag")) {
-								String text = e.select(m.get(keyFiglio)).text();
-								c.addValue(keyFiglio, text);
-								for (String s : matchEntity(text))
-									c.addEntity(s);
-							}
+						for (String keyFiglio : this.pattern.getFigliByContentBlockType(keyPadre).keySet()) {
+							String text = e.select(m.get(keyFiglio)).text();
+							c.addValue(keyFiglio, text);
+							for (String s : matchEntity(text))
+								c.addEntity(s);
 						}
 					}
-					list.add(c);
+					list.add(c);	
 				}
 			}
 		}
