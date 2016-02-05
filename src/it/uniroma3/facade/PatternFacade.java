@@ -19,9 +19,9 @@ public class PatternFacade {
 		Document query = new Document();
 		query.append("host", host);
 		FindIterable<Document> f = this.conn.getMongoClient().getDatabase("pagine").getCollection("pattern").find(query);
-		/*if (f.first()!=null)
+		if (f.first()!=null)
 			return document2Pattern(f.first());
-		else*/
+		else
 			return null;
 	}
 
@@ -47,18 +47,20 @@ public class PatternFacade {
 		return d;
 	}
 
-	/*private Pattern document2Pattern (Document d) {
+	private Pattern document2Pattern (Document d) {
 		Pattern p = new Pattern();
 		p.setHost(d.getString("host"));
-		Document patterns = (Document) d.get("patterns");
-		for (String padre : patterns.keySet()) {
-			Document docPadre = (Document)patterns.get(padre);
-			p.putPadre(padre, docPadre.getString("tag"));
-			for (String figlio : docPadre.keySet())
-				if (!figlio.equals("tag"))
-					p.putFiglio(padre, figlio, docPadre.getString(figlio));
-		}	
+		Document pattern = (Document) d.get("pattern");
+		for (String padre : pattern.keySet()) {
+			Document docPadre = (Document)pattern.get(padre);
+			ContentBlockType c = new ContentBlockType(padre, docPadre.getString("tag"));
+			p.putContentBlockType(c);
+			Document figli = (Document) docPadre.get("figli");
+			for (String figlio : figli.keySet()) {
+				p.putFiglio(c, figlio, figli.getString(figlio));
+			}
+		}
 		return p;
-	}*/
+	}
 }
 

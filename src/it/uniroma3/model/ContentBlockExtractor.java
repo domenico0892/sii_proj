@@ -35,14 +35,14 @@ public class ContentBlockExtractor {
 			//per ora solo CB tipati, cioè del tipo padre.figlio
 			for (ContentBlockType keyPadre : this.pattern.getPatternMap().keySet()) {
 				Map<String, String> m = this.pattern.getFigliByContentBlockType(keyPadre);
-				Elements es = doc.select(m.get(keyPadre.getTag()));
+				Elements es = doc.select(keyPadre.getTag());
 				for (Element e : es) {
 					ContentBlock c = new ContentBlock();
 					c.setDataEstrazione(new Date().toString());
 					c.setHost(p.getHost());
 					c.setUrl(p.getUrl());
 					c.setType(keyPadre.getName());
-					if (m.size() == 1) {
+					if (m.size() == 0) {
 						c.addValue(keyPadre.getName(), e.text());
 						for (String s : matchEntity(e.text()))
 							c.addEntity(s);
