@@ -28,6 +28,13 @@ public class PaginaFacade {
 		return l;
 	}
 	
+	public Pagina getPaginaByUrl (String url) {
+		Document query = new Document();
+		query.append("url", url);
+		FindIterable<Document> f = this.conn.getMongoClient().getDatabase("pagine").getCollection("pagine").find(query);
+		return document2Pagina(f.first());
+	}
+	
 	private Pagina document2Pagina (Document d) {
 		String url = d.getString("url");
 		String host = d.getString("host");

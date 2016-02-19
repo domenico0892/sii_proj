@@ -39,25 +39,28 @@ public class TaskController extends HttpServlet {
 		PatternFacade ptf = new PatternFacade(MongoConnection.getInstance());
 		
 		HttpSession session = request.getSession(); //1
-		//this.mc = new MongoConnection();
 		//richiesta parametri //2
 		String url = request.getParameter("url");
 		String keyword = request.getParameter("keyword");
 		List<String> k = matchEntity(keyword);
 
-
 		//parse url per host e estrazione pagine //3
-		URL pagina = new URL (url);
-		String host = pagina.getHost();
-		session.setAttribute("url", url); // da levare?
-		session.setAttribute("keywords", k); // da levare?
+		//URL pagina = new URL (url);
+		String host = url;
 		List<Pagina> l = pgf.getPagineByHost(host);
+		List<String> urls = new ArrayList<String>();
+		for (Pagina p:l)
+			urls.add(p.getUrl());
+		session.setAttribute("pagine", urls); 
+		session.setAttribute("keywords", k);
+		session.setAttribute("host", host);
+		
 
 		//ricerca del pattern //4
 		Pattern pattern = ptf.getPatternByHost(host);
 
 		if (pattern == null) {
-			if (l.size()>0) {
+			if (l.size()>0) {/*
 				Pagina daPresentare = null;
 				for (Pagina pag : l) {
 					if (pag.getUrl().equals(url))
@@ -73,7 +76,8 @@ public class TaskController extends HttpServlet {
 				Pattern newPat = new Pattern();
 				newPat.setHost(host);
 				session.setAttribute("pattern", newPat);
-				session.setAttribute("pagina", doc.toString());
+				session.setAttribute("pagina", doc.toString());*/
+				nextPage = "/lista.jsp";
 			}
 			else {
 				request.setAttribute("errore", "Nessuna pagina trovata!");
@@ -81,7 +85,7 @@ public class TaskController extends HttpServlet {
 		}
 		else {
 			//estrazione    //5
-			session.setAttribute("host", pattern.getHost()); // da levare?
+			//session.setAttribute("host", pattern.getHost()); // da levare?
 			int size = extractAll(l,pattern,k,MongoConnection.getInstance());
 			request.setAttribute("stato", "estratti "+size+" content block");
 			MongoConnection.getInstance().close();
@@ -105,13 +109,10 @@ public class TaskController extends HttpServlet {
 		HttpSession session = request.getSession(); //1
 
 		//richiesta parametri //2
-		String url = (String) session.getAttribute("url");
+		String host = (String) session.getAttribute("host");
 		@SuppressWarnings("unchecked")
 		List<String> k = (List<String>)session.getAttribute("keywords");
 
-		//parse url per host e estrazione pagine //3
-		URL pagina = new URL (url);
-		String host = pagina.getHost();
 		List<Pagina> l = pgf.getPagineByHost(host);
 
 		//ricerca del pattern //4
