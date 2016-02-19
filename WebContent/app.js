@@ -1,5 +1,8 @@
 $(document).ready(function() {
-	var myExampleClickHandler = function(event){ 
+	var myExampleClickHandler = function(event){
+		/*if (this.label=="iframe") {
+			alert("vietati gli iframe");
+		}*/
 		console.log(this.label);
 		var retVal = prompt("Nome del campo: ","");
 		if (retVal != undefined && retVal != "") {

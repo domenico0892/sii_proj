@@ -37,29 +37,17 @@ public class PatternController extends HttpServlet {
 			p.putFiglio(p.getContentBlockTypeByName(res.get(0)), res.get(1), pattern);
 		}
 		
-		//Document doc = (Document)session.getAttribute("pattern");
-		
-		/*if (res.size() == 1) {
-			doc.append(name, new Document().append("tag",pattern).append("figli", new Document()));
-		}
-		if (res.size() == 2) {
-			Document padre = (Document) doc.get(res.get(0));
-			Document figli = (Document) padre.get("figli");
-			figli.append(res.get(1), pattern);
-		}*/
 		session.setAttribute("pattern", p);
 	}
 
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) 
 			throws ServletException, IOException {
-		MongoConnection m = new MongoConnection();
-		PatternFacade p = new PatternFacade(m);
+		
+		PatternFacade p = new PatternFacade(MongoConnection.getInstance());
 		HttpSession session = request.getSession();
-		//Document doc = (Document)session.getAttribute("pattern");
 		Pattern patt = (Pattern)session.getAttribute("pattern");
 		p.addPattern(patt);
-		m.close();
 		String nextPage = response.encodeURL("/task");
 		ServletContext application  = getServletContext();
 		RequestDispatcher rd = application.getRequestDispatcher(nextPage);

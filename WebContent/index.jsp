@@ -15,7 +15,7 @@
 					<td>URL</td>
 					<td><input type="text" name="url"></td>
 				<tr>
-					<td>Keywords separate da spazi (es. "roma totti rete")</td>
+					<td>Keywords</td>
 					<td><input type="text" name="keyword">
 					<td>
 				<tr>
@@ -26,5 +26,17 @@
 		</form>
 	</div>
 	<div>Stato: ${stato}</div>
+	<br>
+	<div>
+		<h3>Istruzioni:</h3>
+		<ul>
+			<li>Gli URL devono essere ben formati</li>
+			<li>Le keywords devono separate da spazi (es. "roma totti rete")</li>
+			<li>Nella pagina di anteprima la terminazione avviene premendo
+				INVIO o cliccando HO FINITO</li>
+			<li>La selezione dei Content Block avviene con una dot notation
+				"tipo.campo", oppure solo con il tipo</li>
+		</ul>
+	</div>
 </body>
 </html>
