@@ -43,7 +43,7 @@ public class TaskController extends HttpServlet {
 		String url = request.getParameter("url");
 		String keyword = request.getParameter("keyword");
 		List<String> k = matchEntity(keyword);
-
+		session.setAttribute("size entity", k.size());
 		//parse url per host e estrazione pagine //3
 		//URL pagina = new URL (url);
 		String host = url;
@@ -118,7 +118,6 @@ public class TaskController extends HttpServlet {
 		//ricerca del pattern //4
 		Pattern pattern = ptf.getPatternByHost(host);	
 
-
 		//estrazione //5
 		int size = extractAll(l,pattern,k,MongoConnection.getInstance());
 		request.setAttribute("stato", "estratti "+size+" content block");
@@ -135,9 +134,11 @@ public class TaskController extends HttpServlet {
 
 	public List<String> matchEntity(String frase){
 		List<String> entity = new ArrayList<String>();
-		String [] sp = frase.split(" ");
+		if (frase.equals("")) 
+			return entity;
+		String [] sp = frase.trim().split(" ");
 		for (String kw: sp){
-			entity.add(kw);
+			entity.add(kw.toLowerCase());
 		}
 		return entity;
 	}		

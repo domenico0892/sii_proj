@@ -10,10 +10,20 @@
 <body>
 	<h3>Scelta della pagina</h3>
 	<form action="anteprimactrl" method="get">
-		<c:forEach items="${pagine}" var="url">
-			<input type="radio" name="url" value="${url}" checked>${url}<br>
-		</c:forEach>
-		<input type="submit" name="submit" value="Vai!">
+		<div>
+			<input type="submit" name="submit" value="Mi sento fortunato!">
+		</div>
+		<div>
+			<c:forEach items="${pagine}" var="url">
+				<p style="line-height: 25px;">
+					<input type="radio" name="url" value="${url}" checked><a
+						href="${url}" target="_blank">${url}</a>
+				</p>
+			</c:forEach>
+		</div>
+		<div>
+			<input type="submit" name="submit" value="Vai!">
+		</div>
 	</form>
 </body>
 </html>

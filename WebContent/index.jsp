@@ -12,7 +12,7 @@
 		<form action="task" method="get">
 			<table>
 				<tr>
-					<td>URL</td>
+					<td>Sito (es. www.romatoday.it)</td>
 					<td><input type="text" name="url"></td>
 				<tr>
 					<td>Keywords</td>
@@ -30,7 +30,6 @@
 	<div>
 		<h3>Istruzioni:</h3>
 		<ul>
-			<li>Gli URL devono essere ben formati</li>
 			<li>Le keywords devono separate da spazi (es. "roma totti rete")</li>
 			<li>Nella pagina di anteprima la terminazione avviene premendo
 				INVIO o cliccando HO FINITO</li>
